@@ -1,5 +1,8 @@
+const md5 = require('md5')
+
 const User = require('../models/User')
 const views = require('./views.controller')
+
 
 
 exports.register = async(req, res) => {
@@ -8,7 +11,9 @@ exports.register = async(req, res) => {
 		// Create a new user
 		const newUser = new User({
 			email: req.body.username,
-			password: req.body.password
+			// Apply hash
+			password: md5(req.body.password)
+			// password: req.body.password
 		})
 
 		const savedUser = await newUser.save()
@@ -39,7 +44,8 @@ exports.login = async(req, res) => {
 	try {
 
 		const username = req.body.username
-		const password = req.body.password
+		// Apply hash to password
+		const password = md5(req.body.password)
 
 		// Look for username on DB
 		const foundUser = await User.findOne({email: username})
