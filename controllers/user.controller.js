@@ -1,4 +1,4 @@
-const md5 = require('md5')
+const bcrypt = require('bcryptjs')
 
 const User = require('../models/User')
 const views = require('./views.controller')
@@ -8,12 +8,14 @@ const views = require('./views.controller')
 exports.register = async(req, res) => {
 
 	try {
+		// Apply hash to password
+		const salt = bcrypt.genSaltSync(10)
+		const hash = bcrypt.hashSync(req.body.password, salt)
+
 		// Create a new user
 		const newUser = new User({
 			email: req.body.username,
-			// Apply hash
-			password: md5(req.body.password)
-			// password: req.body.password
+			password: hash
 		})
 
 		const savedUser = await newUser.save()
@@ -30,6 +32,7 @@ exports.register = async(req, res) => {
 				message: 'Error saving new user on DB'
 			})
 		}
+
 	} catch (error) {
 		res.status(500).json({
 			success: false,
@@ -42,23 +45,24 @@ exports.register = async(req, res) => {
 exports.login = async(req, res) => {
 
 	try {
-
-		const username = req.body.username
-		// Apply hash to password
-		const password = md5(req.body.password)
+		// Parse request body
+		const {username, password} = req.body
 
 		// Look for username on DB
 		const foundUser = await User.findOne({email: username})
 
 		if (foundUser) {
-			if ( foundUser.password == password ) {
-				views.getSecrets(req, res)
-			} else {
-				res.status(400).json({
-					success: false,
-					message: 'Password incorrect'
-				})
-			}
+			// Check password
+			bcrypt.compare(password, foundUser.password).then((result) => {
+				if (result) {
+					views.getSecrets(req, res)
+				} else {
+					res.status(400).json({
+						success: false,
+						message: 'Password incorrect'
+					})
+				}
+			})
 		} else {
 			res.status(404).json({
 				success: false,
