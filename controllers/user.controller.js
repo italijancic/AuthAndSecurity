@@ -1,13 +1,21 @@
 const bcrypt = require('bcryptjs')
-
 const User = require('../models/User')
-const views = require('./views.controller')
 
 
-
+// User creation
 exports.register = async(req, res) => {
 
 	try {
+
+		// Validate emial unique
+		const email = await User.findOne({email: req.body.username})
+		if (email) {
+			return res.status(400).json({
+				success: false,
+				message: 'email already register'
+			})
+		}
+
 		// Apply hash to password
 		const salt = bcrypt.genSaltSync(10)
 		const hash = bcrypt.hashSync(req.body.password, salt)
@@ -21,11 +29,11 @@ exports.register = async(req, res) => {
 		const savedUser = await newUser.save()
 
 		if (savedUser === newUser) {
-			// res.status(201).json({
-			// 	success: true,
-			// 	message: `usuario: ${savedUser.email} succesfully created`
-			// })
-			res.redirect('/login')
+			res.status(201).json({
+				success: true,
+				message: savedUser
+			})
+			// res.redirect('/login')
 		} else {
 			res.status(500).json({
 				success: false,
@@ -42,33 +50,10 @@ exports.register = async(req, res) => {
 
 }
 
-exports.login = async(req, res) => {
+exports.getUsers = async(req, res) => {
 
 	try {
-		// Parse request body
-		const {username, password} = req.body
 
-		// Look for username on DB
-		const foundUser = await User.findOne({email: username})
-
-		if (foundUser) {
-			// Check password
-			bcrypt.compare(password, foundUser.password).then((result) => {
-				if (result) {
-					views.getSecrets(req, res)
-				} else {
-					res.status(400).json({
-						success: false,
-						message: 'Password incorrect'
-					})
-				}
-			})
-		} else {
-			res.status(404).json({
-				success: false,
-				message: 'user does not exist!'
-			})
-		}
 
 	} catch (error) {
 		res.status(500).json({
