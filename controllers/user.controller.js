@@ -7,15 +7,6 @@ exports.register = async(req, res) => {
 
 	try {
 
-		// Validate emial unique
-		const email = await User.findOne({email: req.body.username})
-		if (email) {
-			return res.status(400).json({
-				success: false,
-				message: 'email already register'
-			})
-		}
-
 		// Apply hash to password
 		const salt = bcrypt.genSaltSync(10)
 		const hash = bcrypt.hashSync(req.body.password, salt)
@@ -52,13 +43,11 @@ exports.register = async(req, res) => {
 
 exports.getUsers = async(req, res) => {
 
-	console.log(req.userID)
+	// console.log(req.userID)
 
 	try {
 
 		const foundUsers = await User.find({})
-
-		console.log(foundUsers)
 
 		if (foundUsers.length != 0) {
 			res.status(200).json({

@@ -1,15 +1,16 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
-// const encrypt = require('mongoose-encryption')
 
 const userSchema = new mongoose.Schema({
-	email: {type: String, required: true},
+	email: {type: String, required: true, uniqueCaseInsensitive: true},
 	password: {type: String, required: true},
 	date: {type: Date, default: Date.now()},
 })
 
-// Add encrypt plugin to passwords
-// userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']})
+
+// Apply plugin to avoid email repetition on users registers
+userSchema.plugin(uniqueValidator)
 
 const User = new mongoose.model('User', userSchema)
 
