@@ -52,8 +52,26 @@ exports.register = async(req, res) => {
 
 exports.getUsers = async(req, res) => {
 
+	console.log(req.userID)
+
 	try {
 
+		const foundUsers = await User.find({})
+
+		console.log(foundUsers)
+
+		if (foundUsers.length != 0) {
+			res.status(200).json({
+				success: true,
+				users: foundUsers
+			})
+		} else {
+			res.status(500).json({
+				success: false,
+				message: 'Not users registered yet'
+			})
+
+		}
 
 	} catch (error) {
 		res.status(500).json({

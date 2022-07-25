@@ -1,9 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const user = require('../controllers/user.controller')
+const { verifyToken } = require('../middlewares/verifyJWT.middleware')
 
 
-router.get('/', /*verify token*/ user.getUsers)
+router.get('/', verifyToken, user.getUsers)
 router.post('/register', user.register)
 
 module.exports = router
