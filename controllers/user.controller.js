@@ -44,7 +44,6 @@ exports.register = async(req, res) => {
 exports.getUsers = async(req, res) => {
 
 	// console.log(req.userID)
-
 	try {
 
 		const foundUsers = await User.find({})

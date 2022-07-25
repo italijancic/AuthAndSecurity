@@ -5,7 +5,7 @@ const { validateFields } = require('../middlewares/fieldsValidator.middleware')
 const auth = require('../controllers/auth.controller')
 
 
-router.post('/', [	check('username', 'Required field').isEmail(),
+router.post('/', [	check('username', 'Required field, must be a valid email address').isEmail(),
 					check('password', 'Required field').not().isEmpty(),
 					validateFields	],
 					auth.login)

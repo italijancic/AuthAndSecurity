@@ -7,7 +7,7 @@ const user = require('../controllers/user.controller')
 
 
 router.get('/', verifyToken, user.getUsers)
-router.post('/register', [	check('username', 'Required field').isEmail(),
+router.post('/register', [	check('username', 'Required field, must be a valid email address').isEmail(),
 							check('password', 'Required field').not().isEmpty(),
 							validateFields	],
 							user.register)
